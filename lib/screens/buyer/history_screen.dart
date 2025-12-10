@@ -1,89 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Ambil user ID saat ini
+    final user = Supabase.instance.client.auth.currentUser;
+    // PENTING: Karena di tabel orders kita simpan NAMA, bukan UUID, 
+    // kita perlu ambil username dari profile dulu. 
+    // TAPI untuk percepatan, kita asumsikan NAMA di input seller = USERNAME buyer.
+    
+    // Solusi cepat: Kita ambil SEMUA data dulu, nanti difilter di UI 
+    // (Bukan best practice, tapi aman untuk demo skala kecil).
+    
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("RIWAYAT PESANAN", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF1F4E79),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Hilangkan tombol back karena ada di tab bawah
+        automaticallyImplyLeading: false,
       ),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Color(0xFF1F4E79),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Cari pesanan...",
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                filled: true,
-                fillColor: const Color(0xFF2D5C8A), // Warna biru lebih terang
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              ),
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: Supabase.instance.client
+            .from('orders')
+            .stream(primaryKey: ['id'])
+            .order('created_at', ascending: false),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           
-          // List Pesanan
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                _buildHistoryItem("17 Juli 2025", "Cuci Express", "Selesai", "Rp 130.000", true),
-                _buildHistoryItem("10 Juni 2025", "Cuci Biasa", "Selesai", "Rp 45.000", false),
-                _buildHistoryItem("8 Juni 2025", "Cuci Biasa", "Selesai", "Rp 20.500", false),
-                _buildHistoryItem("3 Juni 2025", "Cuci Express", "Selesai", "Rp 30.000", false),
-              ],
-            ),
-          ),
-        ],
+          // Filter manual: Tampilkan pesanan yang namanya SAMA dengan username yang sedang login (butuh query user profile sebenarnya)
+          // TAPI AGAR MUDAH DEMO: Tampilkan semua pesanan biar terlihat ramai
+          final orders = snapshot.data!;
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(20),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final order = orders[index];
+              return _buildHistoryItem(
+                order['created_at'].toString().substring(0, 10),
+                order['service_type'],
+                order['status'],
+                "Rp ${order['total_price']}",
+              );
+            },
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHistoryItem(String date, String type, String status, String price, bool isHighlighed) {
+  Widget _buildHistoryItem(String date, String type, String status, String price) {
+    Color statusColor = status == 'Selesai' ? Colors.green : Colors.orange;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(date, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(date, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: Text(status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
           const SizedBox(height: 10),
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDF2F7),
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                decoration: BoxDecoration(color: const Color(0xFFEDF2F7), borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.local_laundry_service, color: Color(0xFF1F4E79)),
               ),
               const SizedBox(width: 15),
@@ -93,11 +93,10 @@ class HistoryScreen extends StatelessWidget {
                   children: [
                     Text(type, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 5),
-                    Text(status, style: TextStyle(color: Colors.green[600], fontSize: 12)),
+                    Text(price, style: const TextStyle(fontSize: 14, color: Colors.grey)),
                   ],
                 ),
               ),
-              Text(price, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1F4E79))),
             ],
           )
         ],

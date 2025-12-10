@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'seller_home_screen.dart';
 import 'seller_order_list_screen.dart'; // Kita buat habis ini
 import 'add_order_screen.dart'; // Kita buat habis ini
+import 'seller_profile_screen.dart';
+import 'seller_history_screen.dart';
 
 class SellerMainLayout extends StatefulWidget {
   final String username;
@@ -21,8 +23,8 @@ class _SellerMainLayoutState extends State<SellerMainLayout> {
     _screens = [
        SellerHomeScreen(username: widget.username), // Tab 0: Home
        const SellerOrderListScreen(),              // Tab 1: Daftar Pesanan
-       const Center(child: Text("Riwayat Laporan (Coming Soon)")), // Tab 2: Riwayat
-       const Center(child: Text("Profil Seller (Coming Soon)")),   // Tab 3: Profil
+       const SellerHistoryScreen(), // Tab 2: Riwayat
+       const SellerProfileScreen(),   // Tab 3: Profil
     ];
   }
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'tracking_screen.dart';
 
-// ================== SCREEN 3: BUYER HOME ==================
 class BuyerHomeScreen extends StatelessWidget {
-  final String username; // Variabel penampung username
+  final String username;
 
   const BuyerHomeScreen({super.key, required this.username});
 
@@ -13,7 +14,7 @@ class BuyerHomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header
+            // --- HEADER (SAMA SEPERTI SEBELUMNYA) ---
             Stack(
               children: [
                 Container(
@@ -28,13 +29,9 @@ class BuyerHomeScreen extends StatelessWidget {
                   child: Container(color: Colors.black.withOpacity(0.4)),
                 ),
                 Positioned(
-                  top: 50,
-                  left: 0,
-                  right: 0,
+                  top: 50, left: 0, right: 0,
                   child: Center(child: const Text("LAUNDRYIN", style: TextStyle(color: Colors.white, letterSpacing: 2))),
                 ),
-                
-                // Card Halo User
                 Padding(
                   padding: const EdgeInsets.only(top: 180, left: 20, right: 20),
                   child: Container(
@@ -50,7 +47,6 @@ class BuyerHomeScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // DISINI NAMA AKAN BERUBAH SESUAI INPUT
                             Text("Halo, $username", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const Text("Scan untuk melanjutkan pesanan", style: TextStyle(fontSize: 12, color: Colors.grey)),
                           ],
@@ -65,66 +61,104 @@ class BuyerHomeScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Status Card
+            // --- STATUS CARD (YANG KITA UBAH JADI REAL-TIME) ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2D5C8A),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                // Query: Ambil pesanan dimana buyer_name == username login, urutkan terbaru, ambil 1 aja
+                stream: Supabase.instance.client
+                    .from('orders')
+                    .stream(primaryKey: ['id'])
+                    .eq('buyer_name', username) 
+                    .order('created_at', ascending: false)
+                    .limit(1),
+                builder: (context, snapshot) {
+                  // KONDISI 1: Loading
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  // KONDISI 2: Tidak ada pesanan aktif
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Container(
+                      width: double.infinity,
                       padding: const EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text("Laundry Selesai Dalam", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                              SizedBox(height: 10),
-                              Text("Tanggal masuk : 19 Juli 2025", style: TextStyle(color: Colors.white70, fontSize: 12)),
-                              Text("Status             : Sedang Dicuci", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                      decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(20)),
+                      child: const Center(child: Text("Belum ada laundry aktif saat ini.", style: TextStyle(color: Colors.grey))),
+                    );
+                  }
+
+                  // KONDISI 3: Ada Data!
+                  final order = snapshot.data![0];
+                  final status = order['status'] ?? 'Proses';
+                  final date = order['created_at'] != null 
+                      ? order['created_at'].toString().substring(0, 10) // Ambil tanggalnya aja
+                      : '-';
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2D5C8A),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Laundry Selesai Dalam", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  const SizedBox(height: 10),
+                                  Text("Tanggal masuk : $date", style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text("Status            : $status", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                ],
+                              ),
+                              Container(
+                                width: 60, height: 60,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Text("2", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                                    Text("hari", style: TextStyle(color: Colors.white, fontSize: 10)),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
-                          Container(
-                            width: 60, height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        
+                        // Tombol Lihat Progress
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TrackingScreen()));
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF1F4E79),
+                              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text("2", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
-                                Text("hari", style: TextStyle(color: Colors.white, fontSize: 10)),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                            child: const Center(child: Text("Lihat Progress >", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                          ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF1F4E79),
-                        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-                      ),
-                      child: const Center(
-                        child: Text("Lihat Progress >", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
 
             const SizedBox(height: 25),
 
-            // Riwayat Title
+            // Riwayat Title (Statis dulu biar gak kepanjangan kodenya)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -135,34 +169,20 @@ class BuyerHomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 15),
-
-            // Riwayat List
-            SingleChildScrollView(
+             const SizedBox(height: 15),
+             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.only(left: 20),
               child: Row(
                 children: [
                   _buildHistoryCard("17/07/2025", "Cuci Express", "Rp 90.000"),
                   _buildHistoryCard("10/07/2025", "Cuci Biasa", "Rp 76.000"),
-                  _buildHistoryCard("05/07/2025", "Setrika", "Rp 40.000"),
                 ],
               ),
             ),
             const SizedBox(height: 30),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color(0xFF1F4E79),
-        unselectedItemColor: Colors.grey[400],
-        showUnselectedLabels: true,
-        currentIndex: 1,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "Riwayat"),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: "Pesan"),
-        ],
       ),
     );
   }

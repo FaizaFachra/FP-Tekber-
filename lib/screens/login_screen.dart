@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'splash_screen.dart';
-// Import file tujuan navigasi
-import 'buyer/buyer_main_layout.dart'; 
-import 'seller/seller_main_layout.dart'; // <--- TAMBAHKAN INI
-// Hapus import 'seller/seller_home_screen.dart' kalau ada, karena sudah diganti layout
+import 'register_screen.dart';
+// Import halaman tujuan
+import 'buyer/buyer_main_layout.dart';
+import 'seller/seller_main_layout.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,14 +14,78 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Controller untuk menangkap teks inputan
-  final TextEditingController _usernameController = TextEditingController();
-  bool _isSellerMode = false;
+  // Kita butuh Email & Password, bukan Username
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  // --- FUNGSI LOGIN ASLI ---
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+    
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    try {
+      // 1. Cek Email & Password ke Supabase Auth
+      final AuthResponse res = await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      
+      final User? user = res.user;
+
+      if (user != null) {
+        // 2. Kalau login sukses, ambil data 'role' & 'username' dari tabel profiles
+        //    Kita filter berdasarkan id user yang sedang login
+        final data = await Supabase.instance.client
+            .from('profiles')
+            .select()
+            .eq('id', user.id)
+            .single(); // .single() artinya kita yakin cuma ada 1 data
+
+        final String role = data['role'] ?? 'buyer';
+        final String username = data['username'] ?? 'User';
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login Berhasil!')),
+          );
+
+          // 3. Arahkan ke halaman sesuai Role
+          if (role == 'seller') {
+             Navigator.pushReplacement(
+              context, 
+              MaterialPageRoute(builder: (_) => SellerMainLayout(username: username))
+            );
+          } else {
+             Navigator.pushReplacement(
+              context, 
+              MaterialPageRoute(builder: (_) => BuyerMainLayout(username: username))
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        // Tampilkan error jika email/password salah
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Gagal: Pastikan Email & Password Benar.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -33,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1F4E79)),
           onPressed: () {
-            // Kembali ke Splash Screen jika ditekan back
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => const SplashScreen()));
           },
@@ -45,10 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 10),
-            // Logo Kecil
             Container(
-              height: 100,
-              width: 100,
+              height: 100, width: 100,
               decoration: BoxDecoration(
                 color: const Color(0xFF1F4E79),
                 borderRadius: BorderRadius.circular(20),
@@ -58,63 +120,27 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             const Text(
               'LAUNDRYIN',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1F4E79),
-                letterSpacing: 1.5,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1F4E79), letterSpacing: 1.5),
             ),
-            Text(
-              'Your Personal Laundry Assistant',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
+            Text('Your Personal Laundry Assistant', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+            
             const SizedBox(height: 40),
 
-            // Toggle Mode (Untuk demo tugas)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Buyer"),
-                  Switch(
-                    activeColor: const Color(0xFF1F4E79),
-                    value: _isSellerMode,
-                    onChanged: (val) => setState(() => _isSellerMode = val),
-                  ),
-                  const Text("Seller"),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Form Username
+            // Form Email (Bukan Username lagi)
             Align(
               alignment: Alignment.centerLeft,
-              child: Text("Username or Email", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
+              child: Text("Email Address", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
             ),
             const SizedBox(height: 8),
             TextField(
-              controller: _usernameController, // Sambungkan Controller
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFF2F4F7),
-                hintText: "Masukkan nama kamu...",
+                hintText: "Contoh: hafidz@test.com",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(30),
-                   borderSide: const BorderSide(color: Color(0xFF1F4E79), width: 1.5),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
               ),
             ),
             const SizedBox(height: 20),
@@ -122,86 +148,52 @@ class _LoginScreenState extends State<LoginScreen> {
             // Form Password
              Align(
               alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  Text("Password", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
-                  const Text("*", style: TextStyle(color: Colors.red)),
-                ],
-              ),
+              child: Text("Password", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFF2F4F7),
-                hintText: "Enter your password",
+                hintText: "Masukkan password...",
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(30),
-                   borderSide: const BorderSide(color: Color(0xFF1F4E79), width: 1.5),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
               ),
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.center,
-              child: RichText(
-                text: TextSpan(
-                  text: "Don't have an account yet? ",
-                  style: TextStyle(color: Colors.grey[600]),
-                  children: const [
-                    TextSpan(
-                      text: "Register",
-                      style: TextStyle(color: Color(0xFF1F4E79), fontWeight: FontWeight.bold),
-                    ),
-                  ],
+            
+            const SizedBox(height: 15),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account yet? ", style: TextStyle(color: Colors.grey[600])),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                  },
+                  child: const Text("Register", style: TextStyle(color: Color(0xFF1F4E79), fontWeight: FontWeight.bold)),
                 ),
-              ),
+              ],
             ),
+
             const SizedBox(height: 40),
 
-            // Button Login
+            // Tombol Login
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  // Logika untuk mengirim nama user
-                  String usernameInput = _usernameController.text.trim();
-                  
-                  // Jika kosong, kasih default name biar tidak error
-                  if (usernameInput.isEmpty) {
-                    usernameInput = _isSellerMode ? "Admin Seller" : "Pengguna Baru";
-                  }
-
-                  if (_isSellerMode) {
-                    // Masuk ke Halaman Seller
-                    Navigator.pushReplacement(
-                      context, 
-                      MaterialPageRoute(builder: (_) => SellerMainLayout(username: usernameInput))
-                    );
-                  } else {
-                    // Masuk ke Halaman Buyer Layout (yang ada Navigasi Bawahnya)
-                    Navigator.pushReplacement(
-                      context, 
-                      MaterialPageRoute(builder: (_) => BuyerMainLayout(username: usernameInput))
-                    );
-                  }
-                },
+                onPressed: _isLoading ? null : _login, // Panggil fungsi _login
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1F4E79),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   elevation: 5,
                 ),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                child: _isLoading 
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Login", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
