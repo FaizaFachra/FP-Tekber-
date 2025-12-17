@@ -16,7 +16,7 @@ class SellerHistoryScreen extends StatelessWidget {
         stream: Supabase.instance.client
             .from('orders')
             .stream(primaryKey: ['id'])
-            .eq('status', 'Selesai') // FILTER HANYA YANG SELESAI
+            .eq('status', 'Selesai') 
             .order('created_at', ascending: false),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {

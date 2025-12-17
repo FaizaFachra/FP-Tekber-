@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // Nanti error ini hilang setelah langkah selanjutnya
-
-// ================== SCREEN 0: SPLASH / WELCOME SCREEN ==================
-// Halaman ini sesuai gambar "Mulai" yang kamu kirim
+import 'login_screen.dart'; 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
@@ -53,13 +50,11 @@ class SplashScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              // Tombol Mulai
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Pindah ke Halaman Login
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const LoginScreen()),

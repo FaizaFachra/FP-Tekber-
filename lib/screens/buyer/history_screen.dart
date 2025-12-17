@@ -6,14 +6,14 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil user ID saat ini
-    final user = Supabase.instance.client.auth.currentUser;
-    // PENTING: Karena di tabel orders kita simpan NAMA, bukan UUID, 
-    // kita perlu ambil username dari profile dulu. 
-    // TAPI untuk percepatan, kita asumsikan NAMA di input seller = USERNAME buyer.
     
-    // Solusi cepat: Kita ambil SEMUA data dulu, nanti difilter di UI 
-    // (Bukan best practice, tapi aman untuk demo skala kecil).
+    final user = Supabase.instance.client.auth.currentUser;
+     
+    
+    
+    
+    
+    
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -31,8 +31,8 @@ class HistoryScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           
-          // Filter manual: Tampilkan pesanan yang namanya SAMA dengan username yang sedang login (butuh query user profile sebenarnya)
-          // TAPI AGAR MUDAH DEMO: Tampilkan semua pesanan biar terlihat ramai
+          
+          
           final orders = snapshot.data!;
 
           return ListView.builder(

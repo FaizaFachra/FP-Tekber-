@@ -11,7 +11,7 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen> {
   final TextEditingController _nameController = TextEditingController();
   
-  // Variabel untuk menyimpan pilihan layanan
+  
   bool isKiloan = false;
   bool isSatuan = false;
   bool isBedcover = false;
@@ -19,18 +19,17 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
   
   bool _isLoading = false;
 
-  // Fungsi Menghitung Total Harga (Sederhana)
+  
   int _calculatePrice() {
     int total = 0;
     if (isKiloan) total += 45000;
     if (isSatuan) total += 30000;
     if (isBedcover) total += 20000;
-    // Kalau express tambah 10rb
+    
     if (isExpress) total += 10000;
     return total;
   }
 
-  // --- FUNGSI KIRIM KE SUPABASE ---
   Future<void> _submitOrder() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -49,7 +48,6 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
 
     setState(() => _isLoading = true);
 
-    // Gabungkan jenis layanan jadi satu string (Contoh: "Kiloan, Express")
     List<String> services = [];
     if (isKiloan) services.add("Kiloan");
     if (isSatuan) services.add("Satuan");
@@ -58,17 +56,16 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
     String serviceString = services.join(", ");
 
     try {
-      // INSERT ke Tabel 'orders'
       await Supabase.instance.client.from('orders').insert({
         'buyer_name': name,
         'service_type': serviceString,
         'total_price': _calculatePrice(),
-        'status': 'Dicuci', // Default status langsung dicuci
+        'status': 'Dicuci', 
         'estimate_date': DateTime.now().add(const Duration(days: 2)).toIso8601String(), // Estimasi 2 hari
       });
 
       if (mounted) {
-        // Tampilkan Dialog Sukses
+        
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -89,8 +86,8 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Tutup dialog
-                  Navigator.pop(context); // Kembali ke Home Seller
+                  Navigator.pop(context); 
+                  Navigator.pop(context); 
                 },
                 child: const Text("OK"),
               )
@@ -147,7 +144,6 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
             
             const SizedBox(height: 30),
             
-            // Total Harga Real-time
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),

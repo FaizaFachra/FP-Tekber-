@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../screens/chat_screen.dart'; // Import layar chat room
+import '../../screens/chat_screen.dart'; 
 
 class SellerChatListScreen extends StatelessWidget {
   const SellerChatListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Skenario Demo: Seller login sebagai "Admin Laundry" agar cocok dengan pesan Buyer
     const myName = "Admin Laundry";
 
     return Scaffold(
@@ -17,7 +16,6 @@ class SellerChatListScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        // Ambil pesan yang dikirim KE kita (receiver = Admin Laundry)
         stream: Supabase.instance.client
             .from('messages')
             .stream(primaryKey: ['id'])
@@ -32,7 +30,6 @@ class SellerChatListScreen extends StatelessWidget {
             return const Center(child: Text("Belum ada pesan masuk."));
           }
 
-          // Filter Manual: Ambil nama pengirim unik
           final allMessages = snapshot.data!;
           final Set<String> uniqueSenders = {};
           final List<Map<String, dynamic>> chatList = [];
@@ -57,7 +54,6 @@ class SellerChatListScreen extends StatelessWidget {
                 subtitle: Text(chat['content'], maxLines: 1, overflow: TextOverflow.ellipsis),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 14),
                 onTap: () {
-                  // Masuk ke Room Chat sebagai Admin Laundry
                   Navigator.push(
                     context,
                     MaterialPageRoute(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'seller_home_screen.dart';
-import 'seller_order_list_screen.dart'; // Kita buat habis ini
-import 'add_order_screen.dart'; // Kita buat habis ini
+import 'seller_order_list_screen.dart'; 
+import 'add_order_screen.dart'; 
 import 'seller_profile_screen.dart';
 import 'seller_history_screen.dart';
 
@@ -21,10 +21,10 @@ class _SellerMainLayoutState extends State<SellerMainLayout> {
   void initState() {
     super.initState();
     _screens = [
-       SellerHomeScreen(username: widget.username), // Tab 0: Home
-       const SellerOrderListScreen(),              // Tab 1: Daftar Pesanan
-       const SellerHistoryScreen(), // Tab 2: Riwayat
-       const SellerProfileScreen(),   // Tab 3: Profil
+       SellerHomeScreen(username: widget.username), 
+       const SellerOrderListScreen(),              
+       const SellerHistoryScreen(), 
+       const SellerProfileScreen(),   
     ];
   }
 
@@ -49,10 +49,8 @@ class _SellerMainLayoutState extends State<SellerMainLayout> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
         ],
       ),
-      // Tombol tengah melayang untuk Scan QR cepat
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-           // Pintasan ke tambah pesanan
            Navigator.push(context, MaterialPageRoute(builder: (_) => const AddOrderScreen()));
         },
         backgroundColor: const Color(0xFF1F4E79),

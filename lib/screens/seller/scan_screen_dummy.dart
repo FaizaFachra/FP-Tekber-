@@ -14,7 +14,6 @@ class ScanScreenDummy extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Kamera Dummy
           Center(
             child: Container(
               width: 300,
@@ -30,7 +29,6 @@ class ScanScreenDummy extends StatelessWidget {
             ),
           ),
           
-          // Tombol Input Manual di Bawah
           Positioned(
             bottom: 50,
             left: 20,
@@ -46,7 +44,7 @@ class ScanScreenDummy extends StatelessWidget {
                     hintText: "Contoh: #QDJBJ12",
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.arrow_forward),
-                      onPressed: () => Navigator.pop(context), // Balik dulu aja
+                      onPressed: () => Navigator.pop(context), 
                     ),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
                   ),

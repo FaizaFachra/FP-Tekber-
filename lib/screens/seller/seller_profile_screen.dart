@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../screens/login_screen.dart'; // Pastikan path import ini benar
+import '../../screens/login_screen.dart'; 
 
 class SellerProfileScreen extends StatelessWidget {
   const SellerProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Ambil email user yang sedang login
     final user = Supabase.instance.client.auth.currentUser;
     final email = user?.email ?? "Seller LaundryIn";
 
@@ -17,7 +16,7 @@ class SellerProfileScreen extends StatelessWidget {
         title: const Text("Profil Seller", style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF1F4E79),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Hilangkan tombol back
+        automaticallyImplyLeading: false, 
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -30,29 +29,24 @@ class SellerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             
-            // Tampilkan Email Asli
             Text(email, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Text("Seller Account", style: TextStyle(color: Colors.grey)),
             
             const SizedBox(height: 30),
             
-            // Panggil fungsi dengan parameter 'context'
             _buildProfileItem(context, Icons.store_mall_directory, "Info Toko"),
             _buildProfileItem(context, Icons.settings, "Pengaturan"),
             _buildProfileItem(context, Icons.help_outline, "Bantuan"),
             
             const SizedBox(height: 20),
             
-            // TOMBOL LOGOUT SELLER
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () async {
-                  // 1. Logout Supabase
                   await Supabase.instance.client.auth.signOut();
                   
-                  // 2. Balik ke Login
                   if (context.mounted) {
                     Navigator.pushAndRemoveUntil(
                       context,
@@ -75,7 +69,6 @@ class SellerProfileScreen extends StatelessWidget {
     );
   }
 
-  // Fungsi helper yang sudah diperbaiki (pakai context)
   Widget _buildProfileItem(BuildContext context, IconData icon, String title) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -84,7 +77,6 @@ class SellerProfileScreen extends StatelessWidget {
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
-          // Navigasi ke halaman detail dummy
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Scaffold(

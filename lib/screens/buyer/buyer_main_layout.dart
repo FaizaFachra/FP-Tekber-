@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'buyer_home_screen.dart';
 import 'profile_screen.dart';
-// Import 2 file baru tadi
 import 'history_screen.dart'; 
 import 'chat_list_screen.dart';
 
@@ -14,7 +13,7 @@ class BuyerMainLayout extends StatefulWidget {
 }
 
 class _BuyerMainLayoutState extends State<BuyerMainLayout> {
-  int _selectedIndex = 0; // Tab yang aktif (0 = Home)
+  int _selectedIndex = 0; 
 
   late final List<Widget> _screens;
 
@@ -22,14 +21,13 @@ class _BuyerMainLayoutState extends State<BuyerMainLayout> {
   void initState() {
     super.initState();
     _screens = [
-       BuyerHomeScreen(username: widget.username), // Tab 0: Home
-       const HistoryScreen(),                      // Tab 1: Riwayat
+       BuyerHomeScreen(username: widget.username), 
+       const HistoryScreen(),                      
        
-       // PERBAIKAN DI SINI: Kirim username asli ke ChatListScreen
-       // Hapus 'const' karena sekarang ada parameter variabel
-       ChatListScreen(username: widget.username),  // Tab 2: Chat
        
-       const ProfileScreen(),                      // Tab 3: Profil
+       ChatListScreen(username: widget.username),  
+       
+       const ProfileScreen(),                      
     ];
   }
 
@@ -59,7 +57,7 @@ class _BuyerMainLayoutState extends State<BuyerMainLayout> {
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Profil"),
         ],
       ),
-      // SAYA PASTIKAN TIDAK MENAMBAHKAN FLOATING ACTION BUTTON DI SINI
+      
     );
   }
 }

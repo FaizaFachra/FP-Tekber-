@@ -9,7 +9,6 @@ class SellerOrderListScreen extends StatefulWidget {
 }
 
 class _SellerOrderListScreenState extends State<SellerOrderListScreen> {
-  // Fungsi Update Status ke Supabase
   Future<void> _updateStatus(int orderId, String newStatus) async {
     try {
       await Supabase.instance.client
@@ -18,7 +17,7 @@ class _SellerOrderListScreenState extends State<SellerOrderListScreen> {
           .eq('id', orderId);
       
       if (mounted) {
-        Navigator.pop(context); // Tutup dialog
+        Navigator.pop(context); 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Status diubah ke $newStatus")));
       }
     } catch (e) {
@@ -92,7 +91,7 @@ class _SellerOrderListScreenState extends State<SellerOrderListScreen> {
                   title: Text(order['buyer_name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text("${order['service_type']} - ${order['status']}"),
                   trailing: const Icon(Icons.edit, size: 20, color: Colors.grey),
-                  onTap: () => _showUpdateDialog(context, order), // Klik untuk update
+                  onTap: () => _showUpdateDialog(context, order), 
                 ),
               );
             },

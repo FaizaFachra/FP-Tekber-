@@ -3,8 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatScreen extends StatefulWidget {
   final String myName;
-  final String otherName; // Nama lawan bicara
-
+  final String otherName; 
   const ChatScreen({super.key, required this.myName, required this.otherName});
 
   @override
@@ -36,18 +35,16 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // List Pesan Real-time
           Expanded(
             child: StreamBuilder<List<Map<String, dynamic>>>(
               stream: Supabase.instance.client
                   .from('messages')
                   .stream(primaryKey: ['id'])
-                  .order('created_at', ascending: true), // Pesan lama di atas
+                  .order('created_at', ascending: true), 
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                 
                 final allMessages = snapshot.data!;
-                // Filter pesan: hanya antara AKU dan DIA
                 final messages = allMessages.where((m) => 
                   (m['sender'] == widget.myName && m['receiver'] == widget.otherName) ||
                   (m['sender'] == widget.otherName && m['receiver'] == widget.myName)

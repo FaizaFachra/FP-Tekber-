@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../screens/chat_screen.dart'; // Import chat screen
+import '../../screens/chat_screen.dart'; 
 
 class ChatListScreen extends StatelessWidget {
-  // 1. Tambahkan variabel untuk menampung username asli
+  
   final String username;
 
-  // 2. Wajibkan username diisi saat dipanggil
+ 
   const ChatListScreen({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
-    // 3. Gunakan username asli, BUKAN "hafidz_buyer" lagi
+    
     final myName = username; 
 
     return Scaffold(
@@ -24,7 +24,7 @@ class ChatListScreen extends StatelessWidget {
         children: [
           _buildChatItem(context, "Admin Laundry", "Klik untuk chat dengan admin", myName),
           const Divider(height: 1),
-          // Dummy lain biar rame
+          
           _buildChatItem(context, "Kurir Laundry", "Pesanan sedang diantar...", myName), 
         ],
       ),
@@ -45,7 +45,7 @@ class ChatListScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChatScreen(myName: myName, otherName: name), // Masuk ke room chat
+            builder: (_) => ChatScreen(myName: myName, otherName: name), 
           ),
         );
       },

@@ -7,7 +7,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil email user yang sedang login
+    
     final user = Supabase.instance.client.auth.currentUser;
     final email = user?.email ?? "User LaundryIn";
 
@@ -30,31 +30,31 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             
-            // Menampilkan Email Asli
+            
             Text(email, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Text("Buyer Account", style: TextStyle(color: Colors.grey)),
             
             const SizedBox(height: 30),
             
-            // --- INI BAGIAN YANG TADINYA ERROR (SUDAH DIPERBAIKI) ---
-            // Sekarang kita kirim 'context' di parameter pertama
+            
+            
             _buildProfileItem(context, Icons.person_outline, "Edit Profil"),
             _buildProfileItem(context, Icons.notifications_outlined, "Notifikasi"),
             _buildProfileItem(context, Icons.lock_outline, "Keamanan"),
-            // --------------------------------------------------------
+            
             
             const SizedBox(height: 20),
             
-            // TOMBOL LOGOUT
+            
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () async {
-                  // 1. Logout dari Supabase
+                  
                   await Supabase.instance.client.auth.signOut();
                   
-                  // 2. Pindah ke Halaman Login
+                  
                   if (context.mounted) {
                     Navigator.pushAndRemoveUntil(
                       context,
@@ -77,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Fungsi helper untuk membuat tombol menu
+  
   Widget _buildProfileItem(BuildContext context, IconData icon, String title) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -86,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
-          // Navigasi ke halaman detail dummy (Supaya tombolnya hidup)
+          
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Scaffold(

@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Kita butuh Email & Password, bukan Username
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -26,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // --- FUNGSI LOGIN ASLI ---
   Future<void> _login() async {
     setState(() => _isLoading = true);
     
@@ -34,7 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     try {
-      // 1. Cek Email & Password ke Supabase Auth
       final AuthResponse res = await Supabase.instance.client.auth.signInWithPassword(
         email: email,
         password: password,
@@ -43,13 +40,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final User? user = res.user;
 
       if (user != null) {
-        // 2. Kalau login sukses, ambil data 'role' & 'username' dari tabel profiles
-        //    Kita filter berdasarkan id user yang sedang login
         final data = await Supabase.instance.client
             .from('profiles')
             .select()
             .eq('id', user.id)
-            .single(); // .single() artinya kita yakin cuma ada 1 data
+            .single(); 
 
         final String role = data['role'] ?? 'buyer';
         final String username = data['username'] ?? 'User';
@@ -59,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
             const SnackBar(content: Text('Login Berhasil!')),
           );
 
-          // 3. Arahkan ke halaman sesuai Role
           if (role == 'seller') {
              Navigator.pushReplacement(
               context, 
@@ -75,7 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        // Tampilkan error jika email/password salah
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Login Gagal: Pastikan Email & Password Benar.'),
@@ -126,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
             
             const SizedBox(height: 40),
 
-            // Form Email (Bukan Username lagi)
             Align(
               alignment: Alignment.centerLeft,
               child: Text("Email Address", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
@@ -180,12 +172,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
             const SizedBox(height: 40),
 
-            // Tombol Login
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _login, // Panggil fungsi _login
+                onPressed: _isLoading ? null : _login, 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1F4E79),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

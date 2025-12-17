@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'seller_order_list_screen.dart';
 import 'scan_screen_dummy.dart';
-import 'seller_history_screen.dart'; // Import History
-import 'seller_chat_list_screen.dart'; // Import Chat List
+import 'seller_history_screen.dart'; 
+import 'seller_chat_list_screen.dart'; 
 
 class SellerHomeScreen extends StatelessWidget {
   final String username;
@@ -30,7 +30,7 @@ class SellerHomeScreen extends StatelessWidget {
             ),
           ),
           
-          // Header Text & Chat Icon
+          
           Positioned(
             top: 50, left: 20, right: 20,
             child: Row(
@@ -44,7 +44,6 @@ class SellerHomeScreen extends StatelessWidget {
                     Text("Halo $username !", style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                   ],
                 ),
-                // TOMBOL CHAT DI HEADER
                 IconButton(
                   icon: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 28),
                   onPressed: () {
@@ -55,7 +54,6 @@ class SellerHomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Main Card (Jumlah Pesanan)
           Positioned(
             top: 140, left: 24, right: 24,
             child: Card(
@@ -82,7 +80,6 @@ class SellerHomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Menu Buttons (Riwayat Sudah Dihidupkan)
           Positioned(
             top: 420, left: 24, right: 24,
             child: Row(

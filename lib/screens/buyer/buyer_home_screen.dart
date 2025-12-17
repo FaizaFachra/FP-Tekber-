@@ -14,7 +14,7 @@ class BuyerHomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- HEADER (SAMA SEPERTI SEBELUMNYA) ---
+            
             Stack(
               children: [
                 Container(
@@ -61,11 +61,11 @@ class BuyerHomeScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // --- STATUS CARD (YANG KITA UBAH JADI REAL-TIME) ---
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: StreamBuilder<List<Map<String, dynamic>>>(
-                // Query: Ambil pesanan dimana buyer_name == username login, urutkan terbaru, ambil 1 aja
+                
                 stream: Supabase.instance.client
                     .from('orders')
                     .stream(primaryKey: ['id'])
@@ -73,12 +73,12 @@ class BuyerHomeScreen extends StatelessWidget {
                     .order('created_at', ascending: false)
                     .limit(1),
                 builder: (context, snapshot) {
-                  // KONDISI 1: Loading
+                  
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  // KONDISI 2: Tidak ada pesanan aktif
+                  
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Container(
                       width: double.infinity,
@@ -88,11 +88,11 @@ class BuyerHomeScreen extends StatelessWidget {
                     );
                   }
 
-                  // KONDISI 3: Ada Data!
+                  
                   final order = snapshot.data![0];
                   final status = order['status'] ?? 'Proses';
                   final date = order['created_at'] != null 
-                      ? order['created_at'].toString().substring(0, 10) // Ambil tanggalnya aja
+                      ? order['created_at'].toString().substring(0, 10) 
                       : '-';
 
                   return Container(
@@ -134,7 +134,7 @@ class BuyerHomeScreen extends StatelessWidget {
                           ),
                         ),
                         
-                        // Tombol Lihat Progress
+                        
                         GestureDetector(
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const TrackingScreen()));
@@ -158,7 +158,7 @@ class BuyerHomeScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // Riwayat Title (Statis dulu biar gak kepanjangan kodenya)
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(

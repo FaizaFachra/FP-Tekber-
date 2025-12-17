@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class TrackingScreen extends StatelessWidget {
   const TrackingScreen({super.key});
 
-  // Fungsi untuk menentukan posisi step berdasarkan status teks
+  
   int _getStatusStep(String status) {
     switch (status) {
       case 'Antrian': return 0;
@@ -18,11 +18,8 @@ class TrackingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil user yang login
-    // Catatan: Idealnya pakai User ID, tapi demi kemudahan demo kita pakai logika Username == Buyer Name
-    // Kita ambil pesanan TERBARU dari tabel orders
+    
     final user = Supabase.instance.client.auth.currentUser;
-    // (Di real app kita query profile dulu, tapi disini kita langsung stream data order saja)
 
     return Scaffold(
       appBar: AppBar(
@@ -31,8 +28,6 @@ class TrackingScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        // Query: Ambil 1 pesanan terakhir yang dibuat (order by created_at desc)
-        // Kita asumsikan ini pesanan milik user yang sedang login (simple logic for demo)
         stream: Supabase.instance.client
             .from('orders')
             .stream(primaryKey: ['id'])
@@ -84,20 +79,15 @@ class TrackingScreen extends StatelessWidget {
                 const Text("Tracking Progress", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
 
-                // Timeline Progress Real-time
-                // Step 0: Antrian / Diterima
+                
                 _buildTimelineItem("Laundry Diterima", "Menunggu antrian...", currentStep >= 0, currentStep > 0),
                 
-                // Step 1: Dicuci
                 _buildTimelineItem("Sedang Dicuci", "Pakaian sedang diproses mesin", currentStep >= 1, currentStep > 1),
                 
-                // Step 2: Dikeringkan
                 _buildTimelineItem("Sedang Dikeringkan", "Proses pengeringan", currentStep >= 2, currentStep > 2),
                 
-                // Step 3: Disetrika
                 _buildTimelineItem("Sedang Disetrika", "Finishing dan packing", currentStep >= 3, currentStep > 3),
                 
-                // Step 4: Selesai
                 _buildTimelineItem("Siap Diambil", "Silakan ambil laundry Anda", currentStep >= 4, currentStep == 4),
               ],
             ),
@@ -109,11 +99,10 @@ class TrackingScreen extends StatelessWidget {
 
   Widget _buildTimelineItem(String title, String subtitle, bool isActive, bool isDone) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start, // Biar garisnya nyambung rapi
+      crossAxisAlignment: CrossAxisAlignment.start, 
       children: [
         Column(
           children: [
-            // Lingkaran Status
             Container(
               width: 30, height: 30,
               decoration: BoxDecoration(
@@ -127,7 +116,7 @@ class TrackingScreen extends StatelessWidget {
                   : (isActive ? const CircleAvatar(radius: 5, backgroundColor: Colors.white) : null),
               ),
             ),
-            // Garis Penghubung (Kecuali item terakhir)
+            
             if (title != "Siap Diambil") 
               Container(
                 width: 2, height: 50,
@@ -138,7 +127,7 @@ class TrackingScreen extends StatelessWidget {
         const SizedBox(width: 15),
         Expanded(
           child: Container(
-            margin: const EdgeInsets.only(bottom: 20), // Jarak antar kartu
+            margin: const EdgeInsets.only(bottom: 20), 
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               color: isActive ? Colors.blue[50] : Colors.white,
