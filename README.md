@@ -15,6 +15,7 @@ Untuk Buyer (Pelanggan)
 - Chat: Berkomunikasi langsung dengan admin laundry.
 
 - Scan QR: Fitur untuk mempermudah identifikasi pesanan.
+  
 
 Untuk Seller (Admin Laundry)
 
@@ -25,6 +26,7 @@ Untuk Seller (Admin Laundry)
 - Chat Admin: Membalas pesan dari pelanggan.
 
 - Riwayat: Rekapitulasi pesanan yang telah selesai.
+  
 
 🛠️ Teknologi yang Digunakan
 
@@ -33,6 +35,7 @@ Frontend: Flutter (Dart) - Framework UI lintas platform.
 Backend: Supabase - Open Source Firebase Alternative (PostgreSQL, Auth, Realtime).
 
 Design: Material Design 3 (Google).
+
 
 ⚙️ Cara Instalasi
 
@@ -44,6 +47,7 @@ Pastikan Flutter SDK sudah terinstal. Cek dengan perintah flutter doctor.
 
 Miliki akun Supabase dan buat proyek baru.
 
+
 Langkah Instalasi
 
 Clone Repository
@@ -52,12 +56,10 @@ Buka terminal dan jalankan perintah:
 git clone [https://github.com/FaizaFachra/FP-Tekber-Kelompok-1-Kelas-A)
 cd FP-Tekber-Kelompok-1-Kelas-A
 
-
 Install Dependencies
 Unduh paket-paket yang diperlukan (seperti supabase_flutter):
 
 flutter pub get
-
 
 Konfigurasi Supabase
 
